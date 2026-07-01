@@ -1,5 +1,5 @@
-from typing import Protocol
+from typing import Protocol, Optional
 
 
 class EmbeddingServiceProtocol(Protocol):
-    def create(self) -> None: ...
+    def create(self, text: str) -> Optional[list[float]]: ...
