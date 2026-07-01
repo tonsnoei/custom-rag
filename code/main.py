@@ -38,6 +38,9 @@ def fill_text_store(text: str, subject: str) -> int:
 def search_vector_repository(query: str) -> list[str]:
     return Dependencies.instance().vector_repository.search(query, 1)
 
+def chat(query: str) -> str:
+    return Dependencies.instance().chat_service.ask(query)
+
 if __name__ == '__main__':
     text = textwrap.dedent("""
 # BrewMate Mini – Productinformatie
@@ -63,12 +66,17 @@ een kleine meerprijs. De adviesprijs bedraagt 79,95 euro.
 
 Op het apparaat zit een garantie van één jaar, geldig vanaf de aankoopdatum bij een erkende verkoper.
       """)
+    print('[Creating Text Chunks]')
     print(create_chunks_from_md(text, "BrewMate"))
+    print('[Sample Embedding]')
     print(create_embedding(text))
     print(f'Added {fill_text_store(text, "BrewMate")} items to vector repository')
-    print('[Kleur]')
+    print('[Vector Search: Kleur]')
     print(search_vector_repository("In welke kleur is de brewmate mini te verkrijgen?"))
-    print('[Pompdruk]')
+    print('[Vector Search: Pompdruk]')
     print(search_vector_repository("Wat is de pompdruk van de brewmate mini?"))
+    print('[Full Chat Result: Kleur]')
+    print('Please be patient, LLM is running...')
+    print(chat("In welke kleur is de brewmate mini te verkrijgen?"))
 
 

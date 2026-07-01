@@ -1,5 +1,7 @@
 from typing import Optional
 
+from services.chat.chat_service_protocol import ChatServiceProtocol
+from services.chat.local_lmstudio_chat_service import LocalLmStudioChatService
 from services.chunker.chunker_protocol import ChunkerProtocol
 from services.chunker.markdown_chunker_service import MarkDownChunkerService
 from services.embeddings_creator.embedding_service_protocol import EmbeddingServiceProtocol
@@ -28,6 +30,7 @@ class Dependencies:
         self._embedding_service: Optional[EmbeddingServiceProtocol] = None
         self._vector_db: Optional[VectorDbProtocol] = None
         self._vector_repository: Optional[VectorRepositoryProtocol] = None
+        self._chat_service: Optional[ChatServiceProtocol] = None
 
 
     @property
@@ -64,6 +67,13 @@ class Dependencies:
             self._vector_repository = NomicEmbedVectorRepository(self.vector_db, self.embedding_service)
         assert self._vector_repository is not None
         return self._vector_repository
+
+    @property
+    def chat_service(self) -> ChatServiceProtocol:
+        if self._chat_service is None:
+            self._chat_service = LocalLmStudioChatService(self.vector_repository)
+        assert self._chat_service is not None
+        return self._chat_service
 
 
 
