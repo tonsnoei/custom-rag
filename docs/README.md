@@ -1,4 +1,4 @@
-# Creating a custom RAG
+# Creating a custom RAG with Python
 
 ## What is RAG? (In simple terms)
 
