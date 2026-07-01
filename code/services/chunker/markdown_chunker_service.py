@@ -10,6 +10,40 @@ from markdown_it.tree import SyntaxTreeNode
 
 from services.token_counter.token_counter_protocol import TokenCounterProtocol
 
+class ContextStack:
+    """
+    ContextStack is used to store the context hierarchy. Think of a document with multiple sub-sections. The
+    hierarchy of H1 -> H2 -> H3 -> H4 etc... is stored here. This makes the context more clear for the RAG.
+    """
+    def __init__(self):
+        self._stack: list[str] = []
+
+    def get_stack(self) -> list[str]:
+        return self._stack
+
+    def push_smart(self, text: str = "", level: int = 0) -> None:
+        while len(self._stack) > level and not len(self._stack) == 0:
+            self.pop()
+        self._push(text)
+
+    def _push(self, value: str) -> None:
+        """
+        Add an item to the stack
+        :param value:
+        :return:
+        """
+        self._stack.append(value)
+
+    def pop(self) -> None:
+        """
+        Remove an item from the stack
+        :return:
+        """
+        if len(self._stack) == 0:
+            return
+
+        self._stack.pop()
+
 
 class MarkDownChunkerService(ChunkerProtocol):
     def __init__(self, token_counter: TokenCounterProtocol):
@@ -43,14 +77,15 @@ class MarkDownChunkerService(ChunkerProtocol):
             # print(node.type, node.tag)
             if node.type == 'heading':
                 self.add_heading_to_context(context_stack, node)
-
-            if node.type == 'paragraph':
+            elif node.type == 'paragraph':
                 result += self.create_chunks(node.children[0].content, context_stack)
+            else:
+                raise Exception(f"Unsupported node type: {node.type}")
 
         return result
 
 
-    def create_chunks(self, data: str, context_stack: "ContextStack") -> list[str]:
+    def create_chunks(self, data: str, context_stack: ContextStack) -> list[str]:
         context_description = self.create_context_description(context_stack)
         desc_token_count = self._token_counter.count(context_description)
         splitter = RecursiveCharacterTextSplitter(chunk_size=self._chunk_size,
@@ -88,32 +123,4 @@ class MarkDownChunkerService(ChunkerProtocol):
         return int(tag[1])
 
 
-class ContextStack:
-    def __init__(self):
-        self._stack: list[str] = []
 
-    def get_stack(self) -> list[str]:
-        return self._stack
-
-    def push_smart(self, text: str = "", level: int = 0) -> None:
-        while len(self._stack) > level and not len(self._stack) == 0:
-            self.pop()
-        self._push(text)
-
-    def _push(self, value: str) -> None:
-        """
-        Add an item to the stack
-        :param value:
-        :return:
-        """
-        self._stack.append(value)
-
-    def pop(self) -> None:
-        """
-        Remove an item from the stack
-        :return:
-        """
-        if len(self._stack) == 0:
-            return
-
-        self._stack.pop()

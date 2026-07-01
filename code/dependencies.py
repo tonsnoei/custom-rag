@@ -4,8 +4,12 @@ from services.chunker.chunker_protocol import ChunkerProtocol
 from services.chunker.markdown_chunker_service import MarkDownChunkerService
 from services.embeddings_creator.embedding_service_protocol import EmbeddingServiceProtocol
 from services.embeddings_creator.nomic_embedding_service import NomicEmbeddingService
+from services.vector_repository.nomic_embed_vector_repository import NomicEmbedVectorRepository
+from services.vector_repository.vector_repository_protocol import VectorRepositoryProtocol
 from services.token_counter.token_counter_protocol import TokenCounterProtocol
 from services.token_counter.token_counter_tiktoken import TokenCounterTikToken
+from services.vector_db.in_memory_vector_db import InMemoryVectorDb
+from services.vector_db.vector_db_protocol import VectorDbProtocol
 
 
 class Dependencies:
@@ -22,6 +26,8 @@ class Dependencies:
         self._chunker_service: Optional[ChunkerProtocol] = None
         self._token_counter: Optional[TokenCounterProtocol] = None
         self._embedding_service: Optional[EmbeddingServiceProtocol] = None
+        self._vector_db: Optional[VectorDbProtocol] = None
+        self._vector_repository: Optional[VectorRepositoryProtocol] = None
 
 
     @property
@@ -44,3 +50,20 @@ class Dependencies:
             self._embedding_service = NomicEmbeddingService()
         assert self._embedding_service is not None
         return self._embedding_service
+
+    @property
+    def vector_db(self) -> VectorDbProtocol:
+        if self._vector_db is None:
+            self._vector_db = InMemoryVectorDb()
+        assert self._vector_db is not None
+        return self._vector_db
+
+    @property
+    def vector_repository(self) -> VectorRepositoryProtocol:
+        if self._vector_repository is None:
+            self._vector_repository = NomicEmbedVectorRepository(self.vector_db, self.embedding_service)
+        assert self._vector_repository is not None
+        return self._vector_repository
+
+
+

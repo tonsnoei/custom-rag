@@ -2,3 +2,4 @@ markdown-it-py
 tiktoken
 langchain
 requests
+numpy

@@ -6,7 +6,13 @@ from requests import Response
 from services.embeddings_creator.embedding_service_protocol import EmbeddingServiceProtocol
 import json
 
-class NomicEmbeddingService (EmbeddingServiceProtocol):
+class NomicEmbeddingService(EmbeddingServiceProtocol):
+    """
+    This service uses nomic embed to create embeddings. It is OpenAI API Compatible. Therefore, you can use LM Studio
+    or Ollama running locally.
+    For this service a connection to a Local or Cloud LLM runner is necessary. Embedding models are small, so it is
+    no problem to run such models locally.
+    """
     def __init__(self):
         self._server_base_url = "http://127.0.0.1:1234"
         self._embedding_model = "text-embedding-nomic-embed-text-v1.5"

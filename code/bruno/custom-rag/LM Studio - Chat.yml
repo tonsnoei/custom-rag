@@ -1,0 +1,22 @@
+info:
+  name: LM Studio - Chat
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://127.0.0.1:1234/v1/embeddings
+  body:
+    type: json
+    data: |-
+      {
+        "model": "text-embedding-nomic-embed-text-v1.5",
+        "input": "\\n# Hoofdstuk 1\\nWat introductietekst.\\n\\n## Sectie 1.1\\nInhoud van sectie 1.1.\\n\\n## Sectie 1.2\\nInhoud van sectie 1.2.\\n"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
